@@ -23,7 +23,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::resource('/santri', santriController::class);
-Route::post('/santri/upload', [santriController::class, 'uploadExcel']);
+Route::post('/santri/upload', [santriController::class, 'uploadExcel']); //upload santri by excel
+
 Route::resource('/walsan', walsanController::class);
+
 Route::resource('/pembimbing', pembimbingController::class);
+Route::get('/pembimbing/list-santri/{id}', [pembimbingController::class, 'listSiswa']); //list santri bedasarkan pembimbingnya
+
 Route::resource('/jurnal', jurnalController::class);
+Route::get('/jurnal/list-jurnal-by-pembimbing/{id}', [jurnalController::class, 'listJurnalByPembimbing']); //list jurnal bedasarkan pembimbingnya
+Route::get('/jurnal/list-jurnal-by-walsan/{id}', [jurnalController::class, 'listJurnalByWalsan']); //list jurnal bedasarkan walsannya

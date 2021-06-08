@@ -154,4 +154,20 @@ class pembimbingController extends Controller
             return ["result"=>"ID tidak ditemukan"];
         }
     }
+
+    public function listSiswa($id)
+    {
+        $cekId = pembimbing::where('id',$id)->first();
+        
+        if($cekId){
+            $data = pembimbing::where('id',$id)->with('santri')->first();
+            if($data){
+                return ["result"=>$data];    
+            }else{
+                return ["result"=>"Data Gagal Ditampilkan"];
+            }
+        }else{
+            return ["result"=>"ID tidak ditemukan"];
+        }
+    }
 }

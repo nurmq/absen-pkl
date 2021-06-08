@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\santri;
 use App\Models\pembimbing;
 use App\Models\jurnal;
+use App\Models\walsan;
 use Validator;
 
 class jurnalController extends Controller
@@ -169,6 +170,42 @@ class jurnalController extends Controller
                 return ["result"=>"Berhasil Menghapus Data"];
             }else{
                 return ["result"=>"Gagal Menghapus Data"];
+            }
+        }else{
+            return ["result"=>"ID tidak ditemukan"];
+        }
+    }
+
+    public function listJurnalByPembimbing($idPembimbing)
+    {
+        $cekId = pembimbing::where('id',$idPembimbing)->first();
+
+        if($cekId){
+            $data = jurnal::whereHas('santri',function($query) use ($idPembimbing){
+                $query->where('pembimbing_id',$idPembimbing);
+            })->with('santri')->orderBy('created_at','desc')->get();
+            if($data){
+                return ["result"=>$data];    
+            }else{
+                return ["result"=>"Gagal Mendapatkan Data"];
+            }
+        }else{
+            return ["result"=>"ID tidak ditemukan"];
+        }
+    }
+
+    public function listJurnalByWalsan($idWalsan)
+    {
+        $cekId = walsan::where('id',$idWalsan)->first();
+
+        if($cekId){
+            $data = jurnal::whereHas('santri',function($query) use ($cekId){
+                $query->where('nisn',$cekId->santri_nisn);
+            })->with('santri')->orderBy('created_at','desc')->get();
+            if($data){
+                return ["result"=>$data];    
+            }else{
+                return ["result"=>"Gagal Mendapatkan Data"];
             }
         }else{
             return ["result"=>"ID tidak ditemukan"];
