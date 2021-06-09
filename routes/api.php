@@ -22,12 +22,13 @@ use App\Http\Controllers\userController;
 Route::get('login',[UserController::class, 'loginError']);
 Route::post('login',[UserController::class, 'login'])->name('login');
 Route::post('register',[UserController::class, 'register']);
+Route::get('logout',[UserController::class, 'logout']);
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => 'auth:api'], function(){
+Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::resource('/santri', santriController::class);    
     Route::post('/santri/upload', [santriController::class, 'uploadExcel']); //upload santri by excel
 

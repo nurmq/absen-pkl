@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Imports\santriImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\User;
 
 class santriController extends Controller
 {

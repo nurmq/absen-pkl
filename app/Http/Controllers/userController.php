@@ -6,54 +6,59 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+// use App\Traits\ApiResponser;
 
 class userController extends Controller
 {
-    public $successStatus = 200;
+    public function login(Request $request)
+    {
+        $attr = $request->validate([
+            'email' => 'required|string|email|',
+            'password' => 'required|string|min:6'
+        ]);
 
-    public function login(){
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
-            $user = Auth::user();
-            $success['token'] =  $user->createToken('nApp')->accessToken;
-            return response()->json(['success' => $success], $this->successStatus);
+        if (!Auth::attempt($attr)) {
+            return $this->error('Credentials not match', 401);
         }
-        else{
-            return response()->json(['error'=>'Unauthorised'], 401);
-        }
+
+        return [
+            'token' => auth()->user()->createToken('API Token')->plainTextToken
+        ];
     }
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required',
-            'c_password' => 'required|same:password',
-            'status' => 'required',
-        ]);
+        $attr = $rules = array(
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+            'status' => 'required'
+        );
 
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);            
+        $cek = Validator::make($request->all(),$attr);
+
+        if ($cek->fails()) {
+            return $cek->errors();
         }
 
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-        $success['token'] =  $user->createToken('nApp')->accessToken;
-        $success['name'] =  $user->name;
-
-        // return response()->json(['success'=>$success], $this->successStatus);
+        $data = new User;
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->password = bcrypt($request->password);
+        $data->status = $request->status;
+        $result = $data->save();
+        
+        // return ['token' => $data->createToken('API Token')->plainTextToken];
         return ["result"=>"Berhasil Registrasi Akun"];
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $logout = $request->user()->token()->revoke();
-        if($logout){
-            return response()->json([
-                'message' => 'Successfully logged out'
-            ]);
-        }
+        auth()->user()->tokens()->delete();
+
+        return [
+            'message' => 'Tokens Revoked'
+        ];
     }
 
     public function details()

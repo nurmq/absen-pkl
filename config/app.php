@@ -163,7 +163,6 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider::class,
-        Laravel\Passport\PassportServiceProvider::class,
         /*
          * Package Service Providers...
          */
